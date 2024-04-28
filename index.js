@@ -33,7 +33,7 @@ async function run() {
     const craftCollection = client.db('craftDB').collection('crafts')
 
     app.get('/addCraft', async (req, res) =>{
-        const cursor = craftCollection.find();
+        const cursor = craftCollection.find().limit(6);
         const result = await cursor.toArray();
         res.send(result);
     })
