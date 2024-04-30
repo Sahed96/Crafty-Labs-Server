@@ -31,9 +31,16 @@ async function run() {
     await client.connect();
 
     const craftCollection = client.db('craftDB').collection('crafts')
+    const craftCollection2 = client.db('craftDB').collection('categoryData')
 
     app.get('/addCraft', async (req, res) =>{
         const cursor = craftCollection.find();
+        const result = await cursor.toArray();
+        res.send(result);
+    })
+    
+    app.get('/categoryCraft', async (req, res) =>{
+        const cursor = craftCollection2.find();
         const result = await cursor.toArray();
         res.send(result);
     })
@@ -52,6 +59,13 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/categoryCraft/:subcategory_name', async (req, res) =>{
+      const categoryCraft = req.params.subcategory_name
+      console.log(newCraft);
+      const result = await craftCollection.find({subcategory_name: categoryCraft}).toArray();
+      res.send(result);
+    })
+
     app.delete('/addCraft/:id', async (req, res)=>{
       const id = req.params.id
       const query = {_id : new ObjectId(id)}
@@ -65,7 +79,6 @@ async function run() {
       const updateCraft =req.body;
       const id = req.params.id
       const filter = {_id : new ObjectId(id)}
-      // const options = { upsert: true};
       const craft = {
         $set:{
           item_name: updateCraft.item_name,
@@ -76,7 +89,7 @@ async function run() {
           time: updateCraft.time,
           subcategory_name: updateCraft.subcategory_name,
           customization: updateCraft.customization,
-          stockStatus: updateCraft.stockStatus
+          stock_status: updateCraft.stock_status
         }
       }
       const result = await craftCollection.updateOne(filter, craft);
